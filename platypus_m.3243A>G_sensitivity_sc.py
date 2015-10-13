@@ -20,8 +20,8 @@ interval_mtDNA = "chrM:3209-3249"
 base_path = "/mnt/Data4/working_directory/stuart/python-2-7-10/scripts/platypus"
 
 #createing regexs for different combinations of bam filename
-format_p = re.compile('P5_\d_\d{1,3}')
-#format_v = re.compile()
+format_P5 = re.compile('P5_\d_\d{1,3}')#matches samples in format P5_n_nnn
+format_PorV = re.IGNORECASE('[Pv]\d+_\d+}') #includes samples in format v5_nnn, v501_nnnn, P5_nnn
 
 #creating a dictionary look up
 my_dict = {}
@@ -31,7 +31,7 @@ with open("test.csv", 'r') as in_file:
 #with open("mitochondrial_sensitivity_MODY.csv", "r") as in_file:
 	for line in in_file:
 		columns = line.split()
-		if format_p.match(columns[0]): 
+		if format_P5.match(columns[0]): 
 			sample_ID = columns[0]
 			print sample_ID	
 			ID_num = int(sample_ID[-3:])
@@ -95,16 +95,17 @@ with open("test.csv", 'r') as in_file:
 				my_dict[sample_ID] = path_to_P5_bam + additional_path + bam_file_name
 				
 			elif ID_num >= 481 and ID_num <= 504:
-				additonal_path = 'P5_481-504/assembly/'
+				extra_path = 'P5_481-504/assembly/'
 				bam_file_name = 'P5_481-504_' + str(ID_num) + bam_end
-				my_dict[sample_ID] = path_to_P5_bam + additional_path + bam_file_name
+				my_dict[sample_ID] = path_to_P5_bam + extra_path + bam_file_name
 
 			else:
-				print sample_ID
+				print 'error'
 
 print my_dict
 	
-#	elif column 0 meets the regular expression in the format of P5_505 or has a v5 in it:
+#	elif format_PorV.match(columns[0]):
+
 #		sample_ID = str(column0 last three digits) 
 #		take column 1 and turn into a string
 #		take last 8 digits and assign as int(batch_number)
