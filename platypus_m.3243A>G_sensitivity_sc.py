@@ -102,17 +102,51 @@ with open("test.csv", 'r') as in_file:
 			else:
 				print 'error'
 
-print my_dict
-	
-#	elif format_PorV.match(columns[0]):
+#print my_dict
 
+#maybe redundant
+#ascertaining how many digits the sample number contains so we can later extract the numerics from sample number from the 
+#ID_num_3 = re.compile('*_\d{3}') 
+#ID_num_4 = re.compile('*_\d{4}') 
+
+#if the sample_ID matches the later panels this code finds the file location in Data4 based on the batch number and sample number and the deduced naming ocnventions within those files 
+		elif format_PorV.match(columns[0]):
+			sample_ID = str(columns[0])
+			date_and_batch = str(columns[1])
+			#take last 8 digits and assign to batch number
+			batch_number = int(date_and_batch[-8:])
+			if batch_number >= 1501266:
+				path_to_bam_directory = path_to_v5_bam + date_and_batch.replace('.', '-', 2) + '/assembly/'
+				for file in os.listdir(path_to_bam_directory):
+					bam_pattern = sample_ID + '*.realigned.bam'
+					if fnmatch.fnmatch(file, bam_pattern):
+						complete_path_to_bam = path_to_bam_directory + file
+						my_dict[sample_ID] = complete_path_to_bam
+
+# This part may be redundant now because I'm using batch number as opposed to the numeric ID to locate the file
+#			if ID_num_4.match(sample_ID):
+#				ID_num = int(sample_ID[-4:])
+#			elif ID_num_3.match(sample_ID):
+#				ID_num = int(sample_ID[-3:])
+#			else:
+#				print 'ID error' + str(columns[0)]
+
+
+		
+#create a path to the directory using os.listdir
+
+	for file in os.listdir('path_to_directory'):
+		if fnmatch.fnmatch(file, 'pattern'):
+			complete_path_to_bam = path_to_P5__bam + additional_path + file			
+			my_dict[sample_ID] = complete_path_to_bam	
+			
 #		sample_ID = str(column0 last three digits) 
 #		take column 1 and turn into a string
 #		take last 8 digits and assign as int(batch_number)
-#		if batch_number  >= 1501266:
+#		if batch_number  >= 1501266: #the naming convention changes here to include the male/female aspect of the data. therefore need to work out how to alter the path including the filename
 #			formatted_column_1 = replace full stops '.' with dashes '-' in column 1
 #			additional_path = formatted_column_1 + '/assembly/'
-#			for file_name in glob.glob(path_to_v5_bam + additional_path + sample_ID + '*realigned.bam')
+#			for file_name in glob.glob(path_to_v5_bam + additional_path + sample_ID + '*realigned.bam') #need to make sure there is MODY in the title of the direct to the file containiing the sample number and 'realigned.bam'
 #				dictionary key == sample_ID, dictionary value == file_name
 #		else 	 		
 #			
