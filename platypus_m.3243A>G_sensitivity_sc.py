@@ -109,6 +109,16 @@ with open("test.csv", 'r') as in_file:
 #ID_num_3 = re.compile('*_\d{3}') 
 #ID_num_4 = re.compile('*_\d{4}') 
 
+def rearrange_bam_location(path_to_bam_directory):
+	for file in os.listdir(path_to_bam_directory):
+		bam_pattern = sample_ID + '.realigned.sorted.bam'
+		if fnmatch.fnmatch(file, bam_pattern):
+			complete_path_to_bam = path_to_bam_directory + file
+			my_dict[sample_ID] = complete_path_to_bam
+	return my_dict
+			
+	 
+
 #if the sample_ID matches the later panels this code finds the file location in Data4 based on the batch number and sample number and the deduced naming ocnventions within those files 
 		elif format_PorV.match(columns[0]):
 			sample_ID = str(columns[0])
@@ -117,20 +127,33 @@ with open("test.csv", 'r') as in_file:
 			batch_number = int(date_and_batch[-8:])
 			if batch_number >= 1501266:
 				path_to_bam_directory = path_to_v5_bam + date_and_batch.replace('.', '-', 2) + '/assembly/'
-				for file in os.listdir(path_to_bam_directory):
-					bam_pattern = sample_ID + '*.realigned.bam'
+				rearrange_bam_location(path_to_bam_directory)
+		
+			elif batch_number < 1501266 and batch_number >= 1403083:
+				date_and_batch_universal = date_and_batch.strip('.-') 				
+				if date_and_batch_universal[5] == 1  and date_and_batch_universal[6] == 4:
+					path_to_bam_directory = path_to_v5_bam + '2014-' + date_and_batch_universal[3,4] + '-' + date_and_batch_universal[1,2] + '_' + str(batch_number) + '/assembly/'  #rearrange ddmmyy to 2014-mm-dd
+					rearrange_bam_location(path_to_bam_directory)
+					
+				elif date_and_batch_universal[5] == 1 and date_and_batch_universal[6] == 5:
+					path_to_bam_directory = path_to_v5_bam + '2015-' + date_and_batch_universal[3,4] + '-' + date_and_batch_universal[1,2] + '_' str(batch_number) + '/assembly/' # rearrange ddmmyy to 2015-mm-dd_nnnnnnnn
+					rearrange_bam_location(path_to_bam_directory)
+					
+			#the batch numbers 1403083(14), 1403237(14), 1403375(14), 1403633(14), 1500047, 1500335, 1501051 need rearranging in the format yyyy-mm-dd_nnnnnnnn #
+			#the following are exceptions 1404237  and 1404001 need the additional_path 2014-10-27_2014-11-12_rerun/assembly/
+			#1404418 needs additional_path 2014-11-12_2014-11-26_merged
+			#any batch with the date 170215 require the additional_path 2015-02-15_1500634 
+			
+
+== 1403083 or batch_number == 1403237 or batch_number ==  :
+				path_to_bam_directory = 
+				for file in os.listdir(path1_to_bam_directory):
+					
+					bam_pattern = sample_ID + '*.realigned.sorted.bam'
 					if fnmatch.fnmatch(file, bam_pattern):
-						complete_path_to_bam = path_to_bam_directory + file
-						my_dict[sample_ID] = complete_path_to_bam
-
-# This part may be redundant now because I'm using batch number as opposed to the numeric ID to locate the file
-#			if ID_num_4.match(sample_ID):
-#				ID_num = int(sample_ID[-4:])
-#			elif ID_num_3.match(sample_ID):
-#				ID_num = int(sample_ID[-3:])
-#			else:
-#				print 'ID error' + str(columns[0)]
-
+						complete_path_to_bam = path1_to_bam_directory + file
+						my_dict[sample_ID] = complete_path_to_bam 	
+				
 
 		
 #create a path to the directory using os.listdir
@@ -139,25 +162,7 @@ with open("test.csv", 'r') as in_file:
 		if fnmatch.fnmatch(file, 'pattern'):
 			complete_path_to_bam = path_to_P5__bam + additional_path + file			
 			my_dict[sample_ID] = complete_path_to_bam	
-			
-#		sample_ID = str(column0 last three digits) 
-#		take column 1 and turn into a string
-#		take last 8 digits and assign as int(batch_number)
-#		if batch_number  >= 1501266: #the naming convention changes here to include the male/female aspect of the data. therefore need to work out how to alter the path including the filename
-#			formatted_column_1 = replace full stops '.' with dashes '-' in column 1
-#			additional_path = formatted_column_1 + '/assembly/'
-#			for file_name in glob.glob(path_to_v5_bam + additional_path + sample_ID + '*realigned.bam') #need to make sure there is MODY in the title of the direct to the file containiing the sample number and 'realigned.bam'
-#				dictionary key == sample_ID, dictionary value == file_name
-#		else 	 		
-#			
-#		
-#		 
-#		if the last 8 digits (batch number) == 140383
-#		additional_path = take column 1, turn into a string
-#		
-#	else:
-#		print 'error with input file'
-#
+
 #loop through each dictionary entry and initiate Platypus calls on it
 
 #create a vcf output file path consisting of: 
