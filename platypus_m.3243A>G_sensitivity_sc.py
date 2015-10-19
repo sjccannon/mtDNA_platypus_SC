@@ -33,6 +33,7 @@ def rearrange_bam_location(path_to_bam_directory):
 		if bam_pattern.match(filename):
 			complete_path_to_bam = path_to_bam_directory + filename
 			my_dict[sample_ID] = complete_path_to_bam
+
 			
 #Constructiong a dictionary of sample number as key and the path to appropriate bam file as the value
 #with open("test.csv", 'r') as in_file:
@@ -115,6 +116,7 @@ with open("mitochondrial_sensitivity_MODY.csv", "r") as in_file:
 			sample_ID = str(columns[0])
 			file_names_with_sex = sample_ID + "*.realigned.bam"
 			date_and_batch = str(columns[1])
+			ID_num = int(sample_ID[-3:])
 #ke last 8 digits and assign to batch number
 			batch_number = int(date_and_batch[-7:])
 			if batch_number >= 1501266 and batch_number != 1502972:
@@ -135,7 +137,13 @@ with open("mitochondrial_sensitivity_MODY.csv", "r") as in_file:
 #the following are exceptions 
 #1404237  and 1404001 need the additional_path 2014-10-27_2014-11-12_rerun/assembly/
 	
-			elif batch_number == 1404237 or batch_number == 1404001:
+			elif batch_number == 1404237 and ID_num <= 696:
+				path_to_bam_directory = path_to_V5_bam + '2014-11-12_2014-11-26_merged/assembly'
+				rearrange_bam_location(path_to_bam_directory)
+			elif batch_number == 1404237 and ID_num > 696:
+				path_to_bam_directory = path_to_V5_bam + '2014-10-27_2014-11-12_rerun/assembly/'
+				rearrange_bam_location(path_to_bam_directory)
+			elif batch_number == 1404001:
 				path_to_bam_directory = path_to_V5_bam + '2014-10-27_2014-11-12_rerun/assembly/'
 				rearrange_bam_location(path_to_bam_directory)
 #				print "6 " + str(len(my_dict.keys()))
@@ -143,6 +151,9 @@ with open("mitochondrial_sensitivity_MODY.csv", "r") as in_file:
 				path_to_bam_directory = path_to_V5_bam + '2015-03-16_1501051/assembly/'
 				rearrange_bam_location(path_to_bam_directory)
 #				print "7 " + str(len(my_dict.keys()))
+
+#
+
 
 #1404418 needs additional_path 2014-11-12_2014-11-26_merged
 			elif batch_number == 1404418:
@@ -178,7 +189,7 @@ with open("mitochondrial_sensitivity_MODY.csv", "r") as in_file:
 
 
 
-
+print my_dict
 in_file.close()
 
 with open("mitochondrial_sensitivity_MODY.csv", "r") as file:
