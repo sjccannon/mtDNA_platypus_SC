@@ -1,23 +1,13 @@
 #import the relevant modules
-import re, os, fnmatch
+import re, os, fnmatch, subprocess
 
 #assign the following variables:
-#path to the platypus variant caller
-path_to_platypus  = "usr/share/platypus/Platypus_0.8.1/" 
 
-#path to the reference sequence
-build_37_ref  = "/mnt/Data1/resources/human_glk_u37.fasta" 
+
 
 #path to bam file directories
 path_to_P5_bam = "/mnt/Data1/targeted_sequencing/"
 path_to_V5_bam  = "/mnt/Data4/targeted_sequencing/" #this also includes the old notation in the format P5_xyz where xyz are itegers
-
-# assigning variable to be called by the command line with platypus.  m.3243A>G mutation with 25bp either side 
-#because only looking at a single region there is no need to create an interval list
-interval_mtDNA = "chrM:3209-3249"
-
-#base path to where the script is being run from and the files are being saved/output
-base_path = "/mnt/Data4/working_directory/stuart/python-2-7-10/scripts/platypus"
 
 #createing regexs for different combinations of bam filename
 format_P5 = re.compile('P5_\d?\d{1,3}')#matches samples in format P5_n_nnn
@@ -45,31 +35,31 @@ with open("mitochondrial_sensitivity_MODY.csv", "r") as in_file:
 			ID_num = int(sample_ID[-3:])
 			bam_end = '.realigned.sorted.bam'
 			if ID_num >= 1 and ID_num <= 9:
-				additional_path = 'P5_001-48/assembly/'
+				additional_path = 'P5_001-048/assembly/'
 				bam_file_name = 'P5_001-048_' + '00' + str(ID_num) + bam_end
 				my_dict[sample_ID] = path_to_P5_bam + additional_path + bam_file_name 
 				#print len(my_dict.keys())
 
 			elif ID_num >= 10 and ID_num <= 48:
 				additional_path = 'P5_001-048/assembly/'
-				bam_file_name = 'P5_001-48_' + '0' + str(ID_num) + bam_end
+				bam_file_name = 'P5_001-048_' + '0' + str(ID_num) + bam_end
 				#append dictionary to include sample_ID as key and string of path to bam file
 				my_dict[sample_ID] = path_to_P5_bam + additional_path + bam_file_name
 				#print len(my_dict.keys())	
 
-			elif ID_num >=  49 and ID_num <= 96:
-				additional_path = 'P5_049_096/assembly/' 
+			elif ID_num >= 49 and ID_num <= 96:
+				additional_path = 'P5_049-096/assembly/' 
 				bam_file_name = 'P5_049-096_' + '0' + str(ID_num) + bam_end
 				my_dict[sample_ID] = path_to_P5_bam + additional_path + bam_file_name 
 
 			elif ID_num >= 97 and ID_num <= 99:
 				additional_path = 'P5_097-144/assembly/'
-				bam_file_name = 'P5_049-144_' + '0' + str(ID_num) + bam_end
+				bam_file_name = 'P5_097-144_' + '0' + str(ID_num) + bam_end
 				my_dict[sample_ID] = path_to_P5_bam + additional_paht + bam_file_name
 
 			elif ID_num >= 100 and ID_num <= 144:
 				additional_path = 'P5_097-144/assembly/'
-				bam_file_name = 'P5_049-144_' + str(ID_num) + bam_end
+				bam_file_name = 'P5_097-144_' + str(ID_num) + bam_end
 				my_dict[sample_ID] = path_to_P5_bam + additional_path + bam_file_name
 		
 			elif ID_num >= 145 and ID_num <= 216:
@@ -94,7 +84,7 @@ with open("mitochondrial_sensitivity_MODY.csv", "r") as in_file:
 
 			elif ID_num >= 385 and ID_num <= 432: 
 				additional_path = 'P5_385-432_run2/assembly/'
-				bam_file_name = 'P5_385-432_' + str(ID_num) + 'realigned.sorted.merged.bam'
+				bam_file_name = 'P5_385-432_' + str(ID_num) + '.realigned.sorted.merged.bam'
 				my_dict[sample_ID] = path_to_P5_bam + additional_path + bam_file_name
 
 			elif ID_num >= 433 and ID_num <= 480:
@@ -138,7 +128,7 @@ with open("mitochondrial_sensitivity_MODY.csv", "r") as in_file:
 #1404237  and 1404001 need the additional_path 2014-10-27_2014-11-12_rerun/assembly/
 	
 			elif batch_number == 1404237 and ID_num <= 696:
-				path_to_bam_directory = path_to_V5_bam + '2014-11-12_2014-11-26_merged/assembly'
+				path_to_bam_directory = path_to_V5_bam + '2014-11-12_2014-11-26_merged/assembly/'
 				rearrange_bam_location(path_to_bam_directory)
 			elif batch_number == 1404237 and ID_num > 696:
 				path_to_bam_directory = path_to_V5_bam + '2014-10-27_2014-11-12_rerun/assembly/'
@@ -187,9 +177,7 @@ with open("mitochondrial_sensitivity_MODY.csv", "r") as in_file:
 						rearrange_bam_location(path_to_bam_directory)
 #						print "5 " + str(len(my_dict.keys()))
 
-
-
-print my_dict
+#print str(len(my_dict.keys()))
 in_file.close()
 
 with open("mitochondrial_sensitivity_MODY.csv", "r") as file:
@@ -199,22 +187,45 @@ with open("mitochondrial_sensitivity_MODY.csv", "r") as file:
 		if sample_ID not in my_dict.keys():
 			print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' + str(sample_ID)	
 	
-
-
-
-#that leaves 221 and if you add up the exceptions in the exception list you get 95. 221-95 126. when print the length only get 118. I think i'm missing 8 from this range.
-#568 up to this point
-												
+							
 ##ln -s creates symbolic link. I could get the operating system to call this command for each dictionary value
-#print 'final ' + str(len(my_dict.keys()))	
 
-#loop through each dictionary entry and initiate Platypus calls on it
+#variables required for platypus
+#need to include the path to the platypus.py file
+path_to_platypus  = "/usr/share/platypus/Platypus_0.8.1/Platypus.py" 
 
-#create a vcf output file path consisting of: 
-#vcf_output = base_path + "/variants/" + sample_id + "platypus_m.3243A>G.vcf"
+#path to the reference sequence
+build_37_ref  = "/mnt/Data1/resources/human_g1k_v37.fasta" 
+
+#base path to where the script is being run from and the files are being saved/output
+base_path = "/mnt/Data4/working_directory/stuart/python-2-7-10/scripts/platypus"
+
+#assigning variable to be called by the command line with platypus.  m.3243A>G mutation with 25bp either side 
+#because only looking at a single region there is no need to create an interval list
+interval_mtDNA = "chrMt"
+
+#loop through each value in the dictionary
+
+import os.path
+count = 0
+for value in my_dict.itervalues():
+	if os.path.isfile(value):
+		count += 1
+		print count
+	elif os.path.isfile(value) == False:
+		print value
+
+#for key, value in my_dict.iteritems():
+#key = "v5_673"
+#if key in my_dict.keys():
+#	#create a vcf output file path consisting of: 
+#	vcf_output = base_path + "/variants/" + key + "platypus_m.3243A>G.vcf"
+#	print vcf_output
+#	command = "python " + path_to_platypus + " callVariants --bamFiles=" + value + " --refFile=" + build_37_ref + " --output=" + vcf_output + " --regions=MT"
+#	print command
+#	subprocess.call(command, shell=True)
 
 #to use platypus I am going to get the operating system to excecute a concatenated string of cammands and pathways on the Linux command line.
 #include here the command to initiate playpus calling on each 
-#command = "python" + platypus_path + "callVariants --bamfiles=" + path_to_bam_files + " --refFile=" + build_37_ref + " --output=" + vcf_output + " --regions=" + interval_mtDNA
 
 #could look through the log files generated by platypus to create a global log file which outlines what has been run
