@@ -1,4 +1,4 @@
-"""script created output the filepaths to patient bam files as a string based on one or a combination of their unique sample ID, batch number, and date of batch
+  """script created output the filepaths to patient bam files as a string based on one or a combination of their unique sample ID, batch number, and date of batch
 exceptions were created to locate 671 bam files"""
 
 #import the relevant modules
