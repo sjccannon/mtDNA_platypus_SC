@@ -255,7 +255,7 @@ interval_mtDNA = "chrMt"
 #	elif os.path.isfile(value) == False:
 #		print value
 
-#uses the operating system to call 
+#uses the operating system to use platypus for every dictionary entry
 for key, value in my_dict.iteritems():
 #key = "v5_673"
 #if key in my_dict.keys():
