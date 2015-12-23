@@ -7,6 +7,7 @@ create a list of paths the bam files corresponding to the patient IDs
 run the list of bam files through Platypus variant caller
 '''
 
+
 import re, subprocess, os, fnmatch, shlex, os.path
 
 #global variables
@@ -24,8 +25,11 @@ P5_dict_from_patient_list = {} #ID:last four characters of patient_ID
 """program functionality"""
 
 '''
+
 Function that uses Linux OS to generate a list of all realigned bam files in target sequencing. 
 Identifies everyfile on the server ending in '*realigned*bam' and stores them in a list
+removes test files or reruns
+
 '''
 
 def bam_list(bam_find1, bam_locations_list):
@@ -35,11 +39,17 @@ def bam_list(bam_find1, bam_locations_list):
 	bam_locations_local = stdout[0].rstrip().split('\n')
 	if len(bam_locations_list) < len(patient_ID_list):
 		for element in bam_locations_local:
-			bam_locations_list.append(element)
+			if 'rerun' not in element:
+				bam_locations_list.append(element)
+	#	for element in bam_locations_list:
+	#		if 'test' not in element:
+	#			bam_locations_list.append(element)
 	return bam_locations_list
 
 '''
+
 Fucntion to extract patient sample IDs from the first column of a csv file
+
 '''
 
 def ID_extractor(patient_ID_list, patient_file):
@@ -84,9 +94,14 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 				patient_bam_dict[patient_ID] = [bam_location]
 			if p5_match2 and patient_ID not in patient_bam_dict.keys():
 				patient_bam_dict[patient_ID] = [bam_location]
-	for patient_ID in patient_ID_list:
-		if patient_ID not in patient_bam_dict.iterkeys():
-			print 'This patient ID escapse the pattern match and no bam path is identified: ' + patient_ID 
+	for patient_ID, bam_path in patient_bam_dict.iteritems():
+		if len(bam_path) > 1:
+                        for item in bam_path:
+                                if 'test' in item:
+                                        bam_path.remove(item)
+                                        patient_bam_dict[patient_ID] = [bam_path]
+ 	return patient_bam_dict
+
 
 '''
 Test functions and exception capture
@@ -133,12 +148,17 @@ def patient_bam_extractor_test(patient_ID_list, bam_locaitons_list):
 		if os.path.isfile == False:
 			print 'This patient, ' + patient_ID + ', has an incorrect bam path. It is not a real file:' + str(bam_path)
 
+	return patient_bam_dict
+
 #function to make platypus work
 
-#def test function to run the 
+ 
 
 if __name__ == "__main__":
 	ID_extractor_test(patient_ID_list, patient_file)
 	bam_list_test(bam_path1, bam_locations_list)
 	patient_bam_extractor_test(patient_ID_list, bam_locations_list)
 
+	for key, value in patient_bam_dict.iteritems():
+		print str(key) + str(value)
+	print len(patient_bam_dict.keys())
