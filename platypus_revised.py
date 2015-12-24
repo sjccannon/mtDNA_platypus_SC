@@ -20,7 +20,10 @@ patient_ID_list = [] #list of patient IDs extracted from an input file
 bam_locations_list = [] #list of bam file abolute paths obtained by the specified Linux 'find' command
 patient_bam_dict = {} #PatientId:BamFilePath
 P5_dict_from_patient_list = {} #ID:last four characters of patient_ID
-
+path_to_platypus = "/usr/share/platypus/Platypus_0.8.1/Platypus.py" 
+build_37_ref = "/mnt/Data1/resources/human_g1k_v37.fasta"
+base_path = "/mnt/Data4/working_directory/stuart/python-2-7-10/scripts/platypus"
+interval_mtDNA = "chrMt"
 
 """program functionality"""
 
@@ -41,9 +44,6 @@ def bam_list(bam_find1, bam_locations_list):
 		for element in bam_locations_local:
 			if 'rerun' not in element:
 				bam_locations_list.append(element)
-	#	for element in bam_locations_list:
-	#		if 'test' not in element:
-	#			bam_locations_list.append(element)
 	return bam_locations_list
 
 '''
@@ -102,6 +102,15 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
                                         patient_bam_dict[patient_ID] = [bam_path]
  	return patient_bam_dict
 
+'''
+Function to generate vcf files using platypus
+'''
+
+'''
+Fucntion to filter vcf files for mitochondrial mutation 3243G>A
+and delete original vcf files once formatted
+'''
+
 
 '''
 Test functions and exception capture
@@ -150,7 +159,22 @@ def patient_bam_extractor_test(patient_ID_list, bam_locaitons_list):
 
 	return patient_bam_dict
 
-#function to make platypus work
+'''
+Function to test platypus output
+'''
+#call platypus variant caller
+#I want to check that there is a vcf file for every patient sample, saved in a specified folder
+#I want to check that some calls have been made if line starts with MT, break
+#if there is not a vcf for that patient, or a vcf with no calls print the patient ID and bam path
+
+
+'''
+Function to test variant filtering
+'''
+#call the variant filter funtion
+#check the output file exists 
+#check the 
+
 
  
 
@@ -159,6 +183,6 @@ if __name__ == "__main__":
 	bam_list_test(bam_path1, bam_locations_list)
 	patient_bam_extractor_test(patient_ID_list, bam_locations_list)
 
-	for key, value in patient_bam_dict.iteritems():
-		print str(key) + str(value)
-	print len(patient_bam_dict.keys())
+#	for key, value in patient_bam_dict.iteritems():
+#		print str(key) + str(value)
+#	print len(patient_bam_dict.keys())
