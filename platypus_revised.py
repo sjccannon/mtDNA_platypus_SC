@@ -22,8 +22,8 @@ patient_bam_dict = {} #PatientId:BamFilePath
 P5_dict_from_patient_list = {} #ID:last four characters of patient_ID
 path_to_platypus = "/usr/share/platypus/Platypus_0.8.1/Platypus.py" 
 build_37_ref = "/mnt/Data1/resources/human_g1k_v37.fasta"
-base_path = "/mnt/Data4/working_directory/stuart/python-2-7-10/scripts/platypus"
-interval_mtDNA = "chrMt"
+base_path = "/mnt/Data4/working_directory/stuart/python-2-7-10/scripts/platypus/variants/"
+
 
 """program functionality"""
 
@@ -76,7 +76,6 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 	for patient_ID in patient_ID_list:
 		#generate a list of raw matches
 		ID_raw_match = [location for location in bam_locations_list if patient_ID in location]
-#need to remove reruns etc...
 		if ID_raw_match != []:
 			#append the raw match to the patientID it is associated with
 			patient_bam_dict[patient_ID] = ID_raw_match
@@ -105,6 +104,7 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 '''
 Function to generate vcf files using platypus
 '''
+
 
 '''
 Fucntion to filter vcf files for mitochondrial mutation 3243G>A
@@ -162,14 +162,35 @@ def patient_bam_extractor_test(patient_ID_list, bam_locaitons_list):
 '''
 Function to test platypus output
 '''
-#call platypus variant caller
-#I want to check that there is a vcf file for every patient sample, saved in a specified folder
-#I want to check that some calls have been made if line starts with MT, break
-#if there is not a vcf for that patient, or a vcf with no calls print the patient ID and bam path
+def test_platypus_output(patient_bam_dict)
+	#call platypus variant caller
+	platypus_caller(platypus_location, genome_reference, target_directory)
+	#I want to check that there is a vcf file for every patient sample, saved in a specified folder
+	#initiate an empty list to store patient_IDs gathered from of looping through the generated vcf filenames
+	vcf_test_list = []
+	#loop through filenames in target directory base_path
+	for file in os.listdir(base_path):
+		#vcf files named with patient_ID.vcf, strip .vcf from each 
+		patient_ID_file = str(file.strip('.vcf'))
+		#append list of patients who have had filenames generated
+		vcf_test_list.append(patient_ID_file)
+		#open each file to check that some calls have been made
+		with open(file, "r") as vcf_file:
+			for line in vcf_file:
+				if sum(1 for line in vcf_file) > 48:
+					break
+				else:
+					print 'This file, ' + vcf_file + ', has no called variants'
+	#loop through vcf_test_list
+	for patient_ID_vcf in vcf_tets_list:
+		#see if the patient ID is in the bam_dictionary keys
+		if patient_ID_vcf not in patient_bam_dict.iterkeys():
+			#excepetion message to prompt investigation
+			print 'This patient, ' + patient_ID_vcf + ', did not have a vcf generated'	
 
 
 '''
-Function to test variant filtering
+check the filtered vcf file
 '''
 #call the variant filter funtion
 #check the output file exists 
