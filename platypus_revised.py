@@ -28,14 +28,13 @@ base_path = "/mnt/Data4/working_directory/stuart/python-2-7-10/scripts/platypus/
 """program functionality"""
 
 '''
-
 Function that uses Linux OS to generate a list of all realigned bam files in target sequencing. 
 Identifies everyfile on the server ending in '*realigned*bam' and stores them in a list
 removes test files or reruns
-
 '''
 
 def bam_list(bam_find1, bam_locations_list):
+	print "aggregating bam file paths in target sequencing"
 	args = shlex.split(bam_find1)
 	bam_1 = subprocess.Popen(args, stdout=subprocess.PIPE)
 	stdout = bam_1.communicate()
@@ -44,15 +43,15 @@ def bam_list(bam_find1, bam_locations_list):
 		for element in bam_locations_local:
 			if 'rerun' not in element:
 				bam_locations_list.append(element)
+	print "file paths aggregated"
 	return bam_locations_list
 
 '''
-
 Fucntion to extract patient sample IDs from the first column of a csv file
-
 '''
 
 def ID_extractor(patient_ID_list, patient_file):
+	print "extracting patient IDs from specified input file"
 	with open(patient_file, "r") as file:
 		for i, line in enumerate(file):
 			#this loop allows the test function to call this function every time. otherwise the patient IDs are re-appended to the list. +1 because the count starts at 0.
@@ -61,6 +60,7 @@ def ID_extractor(patient_ID_list, patient_file):
 				patient_ID = columns[0]
 				patient_ID_list.append(patient_ID)
 				assert (patient_ID in patient_ID_list)
+	print "Patient ID extraction complete. ' + str(len(patient_ID_list)) + ' patient IDs extracted'
 	return patient_ID_list
 '''
 Main method - identify the paths to the required bam files from the list of patient IDs and all of the bam files in the target directories.
@@ -72,6 +72,7 @@ P5 samples 385 -  on Data1 are only included for 'run1'
 
 #function to only identify the bam files needed form the patient ID list
 def patient_bam_extractor(patient_ID_list, bam_locations_list):
+	print 'Locating bam file paths for patient IDs in patient ID list and storing in a dictionary'
 	#iterate through patient_ID_list
 	for patient_ID in patient_ID_list:
 		#generate a list of raw matches
@@ -79,6 +80,7 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 		if ID_raw_match != []:
 			#append the raw match to the patientID it is associated with
 			patient_bam_dict[patient_ID] = ID_raw_match
+			print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys())  
 		if ID_format1.match(patient_ID):
 			match_1_ID_num = patient_ID[-4:]
 			P5_dict_from_patient_list[patient_ID] = match_1_ID_num
@@ -91,20 +93,32 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 			p5_match2 = re.search(bam_match_run1_format, bam_location)
 			if p5_match and patient_ID not in patient_bam_dict.keys():
 				patient_bam_dict[patient_ID] = [bam_location]
+				print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys())
 			if p5_match2 and patient_ID not in patient_bam_dict.keys():
 				patient_bam_dict[patient_ID] = [bam_location]
+				print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys())
 	for patient_ID, bam_path in patient_bam_dict.iteritems():
 		if len(bam_path) > 1:
                         for item in bam_path:
                                 if 'test' in item:
                                         bam_path.remove(item)
+					print 'Removed test bam file: ' + item + '. ' + 'Patient ' + patient_ID + ' still has a non-test bam file to be analysed.'
                                         patient_bam_dict[patient_ID] = [bam_path]
+	print 'Dictionary complete. ' + str(len(patient_bam_dict.keys()) + ' patient bam files located.'
+
  	return patient_bam_dict
 
 '''
 Function to generate vcf files using platypus
 '''
-
+def platypus_caller(path_to_platypus, build_37_ref, base_path, patient_bam_dict):
+	for patient_ID, bam_path in pathient_bam_dict.iteritems():
+		print 'Variant Calling - ' + patient_ID  
+		vcf_output_file = base_path + key + '.vcf'
+		command = "python " + path_to_platypus + " callVariants --bamFiles=" + str(value) + " --refFile=" + build_37_ref + " --output=" + vcf_output + " --regions=MT"
+		subprocess.call(command, shell=True)
+	print 'Variant calling complete'
+	return
 
 '''
 Fucntion to filter vcf files for mitochondrial mutation 3243G>A
@@ -162,9 +176,9 @@ def patient_bam_extractor_test(patient_ID_list, bam_locaitons_list):
 '''
 Function to test platypus output
 '''
-def test_platypus_output(patient_bam_dict)
+def test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict):
 	#call platypus variant caller
-	platypus_caller(platypus_location, genome_reference, target_directory)
+	platypus_caller(platypus_location, genome_reference, target_directory, patient_bam_dict)
 	#I want to check that there is a vcf file for every patient sample, saved in a specified folder
 	#initiate an empty list to store patient_IDs gathered from of looping through the generated vcf filenames
 	vcf_test_list = []
