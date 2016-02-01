@@ -67,12 +67,14 @@ Fucntion to extract patient sample IDs from the first column of a csv file
 '''
 
 def ID_extractor(patient_ID_list, patient_file):
-	print "Extracting patient IDs from specified input file. please ensure the patient ID is in the first column of the file"
+	print "Extracting patient IDs from specified input file. please ensure the patient ID is in the first column of the .csv file"
 	with open(patient_file, "r") as file:
-		#for loop that counts the number of lines in the file
+		#initiate a for loop that counts the number of lines in the file
 		for i, line in enumerate(file):
-			#this loop allows the test function to call this function every time. otherwise the patient IDs are re-appended to the list. +1 because the count starts at 0.
+			#this if statement allows the test function to call this function every time. otherwise the patient IDs are re-appended to the list. +1 because the count starts at 0.
+			#if the length of the ID list is less than the number of lines (add 1 because python counts from 0) 
 			if len(patient_ID_list) < i+1:
+				#extract and append patient_IDs from the file to the list of IDs
 				columns = line.split()
 				patient_ID = columns[0]
 				patient_ID_list.append(patient_ID)
@@ -86,17 +88,17 @@ Will identify every P5 bam file on Data1 - some are duplicated on Data4 - in the
 P5 samples 385 -  on Data1 are only included for 'run1'
 '''
 
-
 #function to only identify the bam files needed form the patient ID list
 def patient_bam_extractor(patient_ID_list, bam_locations_list):
 	print 'Locating bam file paths for patient IDs in patient_ID_list and storing in a dictionary'
 	#iterate through patient_ID_list
 	for patient_ID in patient_ID_list:
-		#generate a list of raw matches
+		#generate a list of raw matches for the patient IDs using list comprehension. Raw list may include duplicates.
+		#include the absolute paths to the bam files from the bam_locations_list, if the patient ID is in there
 		ID_raw_match = [location for location in bam_locations_list if patient_ID in location]
-		#this statement prevents the list being appended multiple times
+		#this statement prevents the list being appended multiple times. 
 		if ID_raw_match != []:
-			#append the raw match to the patientID it is associated with
+			#append the raw matches to the patientID it is associated with in a dictionary (patient ID is the key)
 			patient_bam_dict[patient_ID] = ID_raw_match
 			print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys())
 		#string matching to extract the numerics of the patient_ID
