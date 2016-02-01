@@ -101,9 +101,8 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 			#append the raw matches to the patientID it is associated with in a dictionary 
 			#(patient ID is the key, bam paths ) may include duplicates in the values. 
 			patient_bam_dict[patient_ID] = ID_raw_match
-		print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys()))
+		#print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys()))
 		#string matching to extract the numerics of the patient_ID. This is required to generate absolute filepaths.
-		#only uses format 1 initially.
 		if ID_format1.match(patient_ID):
 			#extract the ID_numbers using negative indexing
 			match_1_ID_num = patient_ID[-4:]
