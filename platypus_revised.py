@@ -101,13 +101,14 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 			#append the raw matches to the patientID it is associated with in a dictionary (patient ID is the key)
 			patient_bam_dict[patient_ID] = ID_raw_match
 			print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys())
-		#string matching to extract the numerics of the patient_ID
+		#string matching to extract the numerics of the patient_ID. This is required to generate absolute filepaths.
+		#only uses format 1 initially.
 		if ID_format1.match(patient_ID):
-			#extract the ID_numbers
+			#extract the ID_numbers using negative indexing
 			match_1_ID_num = patient_ID[-4:]
-			#generate a dictionary of P5 patients
+			#generate a dictionary of P5 patients. 
 			P5_dict_from_patient_list[patient_ID] = match_1_ID_num
-			#print 'p5_match dict' + str(len(P5_dict_from_patient_list.keys()))
+			print 'patients with p5_match dict ' + str(len(P5_dict_from_patient_list.keys()))
 	#iterates through the patient IDs and ID numbers (numerics) in the p5 dictionary
 	for patient_ID, ID_num in P5_dict_from_patient_list.iteritems():
 		#this is a generic random expresion compiled to match the majority of samples, notice the interchangeable ID_numbers
