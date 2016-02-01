@@ -101,7 +101,7 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 			#append the raw matches to the patientID it is associated with in a dictionary 
 			#(patient ID is the key, bam paths ) may include duplicates in the values. 
 			patient_bam_dict[patient_ID] = ID_raw_match
-			print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys())
+		print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys()))
 		#string matching to extract the numerics of the patient_ID. This is required to generate absolute filepaths.
 		#only uses format 1 initially.
 		if ID_format1.match(patient_ID):
@@ -109,7 +109,7 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 			match_1_ID_num = patient_ID[-4:]
 			#generate a dictionary of P5 patients. 
 			P5_dict_from_patient_list[patient_ID] = match_1_ID_num
-			print 'Number of patients identified as tested using p5 and included into a dictionary with all of the bam files containing their : ' + str(len(P5_dict_from_patient_list.keys()))
+	print 'Number of patients identified as tested using p5 and included into a dictionary with all of the bam files containing their : ' + str(len(P5_dict_from_patient_list.keys()))
 	#iterates through the patient IDs and ID numbers (numerics) in the p5 dictionary
 	for patient_ID, ID_num in P5_dict_from_patient_list.iteritems():
 		#this is a generic random expresion compiled to match the majority of samples, notice the interchangeable ID_numbers.
@@ -129,10 +129,10 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 				#add it to the dictionary. This ensures each patient_ID for patients tested onthe
 				#p5 panel only has one bam file
 				patient_bam_dict[patient_ID] = [bam_location]
-				print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys())
+				print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys()))
 			if p5_match2 and patient_ID not in patient_bam_dict.keys():
 				patient_bam_dict[patient_ID] = [bam_location]
-				print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys())
+				print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys()))
 	for patient_ID, bam_path in patient_bam_dict.iteritems():
 		#removes the items with 'test' in the string
 		if len(bam_path) > 1:
@@ -142,9 +142,8 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
                                         #exception capture notification
                                         print 'Removed test bam file: ' + item + '. ' + 'Patient ' + patient_ID + ' still has a non-test bam file to be analysed.'
                                         patient_bam_dict[patient_ID] = [bam_path]
-	print 'Dictionary complete. ' + str(len(patient_bam_dict.keys()) + ' patient bam files located.'
-
- 	return patient_bam_dict
+	print 'Dictionary complete. ' + str(len(patient_bam_dict.keys())) + ' patient bam files located.'
+	return patient_bam_dict
 
 '''
 Function to generate vcf files using platypus
@@ -255,7 +254,9 @@ if __name__ == "__main__":
 	ID_extractor_test(patient_ID_list, patient_file)
 	bam_list_test(bam_path1, bam_locations_list)
 	patient_bam_extractor_test(patient_ID_list, bam_locations_list)
-	test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict)
+	print patient_bam_dict
+
+#	test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict)
 
 #	for key, value in patient_bam_dict.iteritems():
 #		print str(key) + str(value)
