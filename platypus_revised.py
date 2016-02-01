@@ -98,7 +98,8 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 		ID_raw_match = [location for location in bam_locations_list if patient_ID in location]
 		#this statement prevents the list being appended multiple times. 
 		if ID_raw_match != []:
-			#append the raw matches to the patientID it is associated with in a dictionary (patient ID is the key)
+			#append the raw matches to the patientID it is associated with in a dictionary 
+			#(patient ID is the key, bam paths ) may include duplicates in the values. 
 			patient_bam_dict[patient_ID] = ID_raw_match
 			print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys())
 		#string matching to extract the numerics of the patient_ID. This is required to generate absolute filepaths.
@@ -108,19 +109,25 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 			match_1_ID_num = patient_ID[-4:]
 			#generate a dictionary of P5 patients. 
 			P5_dict_from_patient_list[patient_ID] = match_1_ID_num
-			print 'patients with p5_match dict ' + str(len(P5_dict_from_patient_list.keys()))
+			print 'Number of patients identified as tested using p5 and included into a dictionary with all of the bam files containing their : ' + str(len(P5_dict_from_patient_list.keys()))
 	#iterates through the patient IDs and ID numbers (numerics) in the p5 dictionary
 	for patient_ID, ID_num in P5_dict_from_patient_list.iteritems():
-		#this is a generic random expresion compiled to match the majority of samples, notice the interchangeable ID_numbers
+		#this is a generic random expresion compiled to match the majority of samples, notice the interchangeable ID_numbers.
+		#this ensures only the 'realigned.sorted.bam' files are included.
 		bam_match_format = re.compile('.*Data1.*P5_\d{3}-\d{3}/assembly.*P5_\d{3}-\d{3}.*(%s)\.realigned.sorted.bam'%ID_num)
-		#this is to account for exceptions where there is a 'run1' in the filepath 
+		#this is to account for exceptions where there is a 'run1' in the filepath. 
 		bam_match_run1_format = re.compile('.*Data1.*P5_\d{3}-\d{3}_run1/assembly.*P5_\d{3}-\d{3}.*(%s)\.realigned.sorted.bam'%ID_num)
 		#nested loop to compare each match to the bam_location
 		for bam_location in bam_locations_list:
+			#searches the bam locaton list for realigned.sorted.bam files that ar required for each patient
 			p5_match = re.search(bam_match_format, bam_location)
 			p5_match2 = re.search(bam_match_run1_format, bam_location)
-			#the following two if statements update 
+			#the following two if statements update the dictionary  
+			#if the realigned sorted bam file is in the bam locations list, has the patient ID and is not in the patient bam
+			#dictionary
 			if p5_match and patient_ID not in patient_bam_dict.keys():
+				#add it to the dictionary. This ensures each patient_ID for patients tested onthe
+				#p5 panel only has one bam file
 				patient_bam_dict[patient_ID] = [bam_location]
 				print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys())
 			if p5_match2 and patient_ID not in patient_bam_dict.keys():
