@@ -149,21 +149,21 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 '''
 Function to generate vcf files using platypus
 '''
-def platypus_caller(path_to_platypus, build_37_ref, base_path, patient_bam_dict):
+'''def platypus_caller(path_to_platypus, build_37_ref, base_path, patient_bam_dict):
 	for patient_ID, bam_path in pathient_bam_dict.iteritems():
 		print 'Variant Calling - ' + patient_ID  
 		vcf_output_file = base_path + key + '.vcf'
 		command = "python " + path_to_platypus + " callVariants --bamFiles=" + str(value) + " --refFile=" + build_37_ref + " --output=" + vcf_output + " --regions=MT"
 		subprocess.call(command, shell=True)
 	print 'Variant calling complete'
-	return
+	return '''
 
 '''
 Fucntion to filter vcf files for mitochondrial mutation 3243G>A
 and delete original vcf files once formatted
 '''
-with open ("filtered_platypus_varaints", "a") as out_file:
-	list_of_files = os.listdir(vcf_location)
+#with open ("filtered_platypus_varaints", "a") as out_file:
+#	list_of_files = os.listdir(vcf_location)
 
 '''
 Test functions and exception capture
@@ -215,7 +215,7 @@ def patient_bam_extractor_test(patient_ID_list, bam_locaitons_list):
 '''
 Function to test platypus output
 '''
-def test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict):
+'''def test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict):
 	#call platypus variant caller
 	platypus_caller(platypus_location, genome_reference, target_directory, patient_bam_dict)
 	#I want to check that there is a vcf file for every patient sample, saved in a specified folder
@@ -235,12 +235,13 @@ def test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_
 				else:
 					print 'This file, ' + vcf_file + ', has no called variants'
 	#loop through vcf_test_list
-	for patient_ID_vcf in vcf_tets_list:
+	for patient_ID_vcf in vcf_tests_list:
 		#see if the patient ID is in the bam_dictionary keys
 		if patient_ID_vcf not in patient_bam_dict.iterkeys():
 			#excepetion message to prompt investigation
 			print 'This patient, ' + patient_ID_vcf + ', did not have a vcf generated'	
 
+'''
 
 '''
 check the filtered vcf file
