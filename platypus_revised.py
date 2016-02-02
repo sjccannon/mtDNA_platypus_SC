@@ -253,7 +253,8 @@ if __name__ == "__main__":
 	ID_extractor_test(patient_ID_list, patient_file)
 	bam_list_test(bam_path1, bam_locations_list)
 	patient_bam_extractor_test(patient_ID_list, bam_locations_list)
-	print patient_bam_dict
+	for key, value in  patient_bam_dict.iteritems():
+		print str(key) + ' ' + str(value)
 
 #	test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict)
 
