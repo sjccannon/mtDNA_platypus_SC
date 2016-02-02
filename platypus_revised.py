@@ -14,6 +14,7 @@ import re, subprocess, os, fnmatch, shlex, os.path
 #the linux find command required to locate the bam files. This could become raw input rather than hard coded to increase functionality
 bam_path1 = "find /mnt/Data1/targeted_sequencing/ /mnt/Data4/targeted_sequencing/ -type f -name '*realigned*bam'"
 #regular expression to match patient ID in format P5_a_bcd. Separated because legacy filenaming caused additional exceptions to the ID_format2 filenames.
+#this is required because unlike to other ID_format, the patient sample whole is not included in the file path. 
 ID_format1 = re.compile('P5_\d{1,2}_\d{1,3}') 
 #regular expression to match patient Id in formats v5_abc, v501_abcd, P5_abc. 
 ID_format2 = re.compile('[Pv]\d+_\d+')
@@ -118,11 +119,11 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 		bam_match_run1_format = re.compile('.*Data1.*P5_\d{3}-\d{3}_run1/assembly.*P5_\d{3}-\d{3}.*(%s)\.realigned.sorted.bam'%ID_num)
 		#nested loop to compare each match to the bam_location
 		for bam_location in bam_locations_list:
-			#searches the bam locaton list for realigned.sorted.bam files that ar required for each patient
+			#searches the bam locaton list for the re matches (files that ar required for each patient)
 			p5_match = re.search(bam_match_format, bam_location)
 			p5_match2 = re.search(bam_match_run1_format, bam_location)
-			#the following two if statements update the dictionary  
-			#if the realigned sorted bam file is in the bam locations list, has the patient ID and is not in the patient bam
+			#the following two if statements update the dictionary if:
+			#the realigned sorted bam file is in the bam locations list, has the patient ID and the patient_ID is not in the patient bam
 			#dictionary
 			if p5_match and patient_ID not in patient_bam_dict.keys():
 				#add it to the dictionary. This ensures each patient_ID for patients tested onthe
@@ -148,12 +149,12 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 Function to generate vcf files using platypus
 '''
 '''def platypus_caller(path_to_platypus, build_37_ref, base_path, patient_bam_dict):
-	for patient_ID, bam_path in pathient_bam_dict.iteritems():
-		print 'Variant Calling - ' + patient_ID  
-		vcf_output_file = base_path + key + '.vcf'
-		command = "python " + path_to_platypus + " callVariants --bamFiles=" + str(value) + " --refFile=" + build_37_ref + " --output=" + vcf_output + " --regions=MT"
+	for patient_ID, bam_path in patient_bam_dict.iteritems():
+		print 'Variant Calling for: ' + patient_ID  
+		vcf_output_file = base_path + '_' + patient_ID + '.vcf'
+		command = "python " + path_to_platypus + " callVariants --bamFiles=" + str(bam_path) + " --refFile=" + build_37_ref + " --output=" + vcf_output + " --regions=MT"
 		subprocess.call(command, shell=True)
-	print 'Variant calling complete'
+	print 'Variant calling complete.'
 	return '''
 
 '''
