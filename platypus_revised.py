@@ -152,9 +152,7 @@ def platypus_caller(path_to_platypus, build_37_ref, base_path, patient_bam_dict)
 	for patient_ID, bam_path in patient_bam_dict.iteritems():
 		print 'Variant Calling for: ' + patient_ID  
 		vcf_output_file = base_path + patient_ID + '.vcf'
-#		print str(bam_path[0])
 		command = "python " + path_to_platypus + " callVariants --bamFiles=" + str(bam_path[0]) + " --refFile=" + build_37_ref + " --output=" + vcf_output_file + " --regions=MT"
-#		print command
 		subprocess.call(command, shell=True)
 	print 'Variant calling complete.'
 	return 
@@ -224,7 +222,7 @@ def bam_list_test(bam_path1, bam_locations_list):
 	bam_list(bam_path1, bam_locations_list)
 	for bam_path in bam_locations_list:
 		if os.path.isfile == False:
-			print "error in bam list: " + item + " is not a real file"
+			print "error in bam list: " + item + " is not present on the server"
 	return bam_locations_list 
 
 
@@ -246,28 +244,32 @@ def patient_bam_extractor_test(patient_ID_list, bam_locaitons_list):
 '''
 Function to test platypus output
 '''
-'''def test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict):
+def test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict):
 	#check the target directory id empty
-	#call platypus variant caller
-	platypus_caller(platypus_location, genome_reference, target_directory, patient_bam_dict)
-	#I want to check that there is a vcf file for every patient sample, saved in a specified folder
+	if os.listdir() == []:
+		#call platypus variant caller
+		platypus_caller(platypus_location, genome_reference, target_directory, patient_bam_dict)
+		#I want to check that there is a vcf file for every patient sample, saved in a specified folder
+	else:
+		print 'WARNING - target directory contains previously called .vcfs------------------------------------------------------------'
+		print 'no variant calling has been performed'
 	#initiate an empty list to store patient_IDs gathered from of looping through the generated vcf filenames
 	vcf_test_list = []
 	#loop through filenames in target directory base_path
 	for file in os.listdir(base_path):
 		#vcf files named with patient_ID.vcf, strip .vcf from each 
-		patient_ID_file = str(file.strip('.vcf'))
+		patient_ID_file = str(file).strip('.vcf')
 		#append list of patients who have had filenames generated
 		vcf_test_list.append(patient_ID_file)
-		#open each file to check that some calls have been made
+'''open each file to check that some calls have been made
 		with open(file, "r") as vcf_file:
 			for line in vcf_file:
 				if sum(1 for line in vcf_file) > 48:
 					break
 				else:
-					print 'This file, ' + vcf_file + ', has no called variants'
+					print 'This file, ' + vcf_file + ', has no called variants'''
 	#loop through vcf_test_list
-	for patient_ID_vcf in vcf_tests_list:
+	for patient_ID in vcf_test_list:
 		#see if the patient ID is in the bam_dictionary keys
 		if patient_ID_vcf not in patient_bam_dict.iterkeys():
 			#excepetion message to prompt investigation
