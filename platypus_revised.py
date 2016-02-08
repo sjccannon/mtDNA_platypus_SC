@@ -134,6 +134,7 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
 				patient_bam_dict[patient_ID] = [bam_location]
 				print patient_ID + ' added.' + 'Dictionary length = ' + str(len(patient_bam_dict.keys()))
 	for patient_ID, bam_path in patient_bam_dict.iteritems():
+		print str(patient_ID) + str(bam_path)
 		#removes the items with 'test' in the string
 		if len(bam_path) > 1:
                         for item in bam_path:
@@ -141,7 +142,7 @@ def patient_bam_extractor(patient_ID_list, bam_locations_list):
                                         bam_path.remove(item)
                                         #exception capture notification
                                         print 'Removed test bam file: ' + item + '. ' + 'Patient ' + patient_ID + ' still has a non-test bam file to be analysed.'
-                                        patient_bam_dict[patient_ID] = [bam_path]
+		print str(patient_ID) + str(bam_path)
 	print 'Dictionary complete. ' + str(len(patient_bam_dict.keys())) + ' patient bam files located.'
 	return patient_bam_dict
 
@@ -248,10 +249,9 @@ Function to test platypus output
 '''
 def test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict):
 	#check the target directory id empty
-	if os.listdir() == []:
+	if os.listdir(base_path) == []:
 		#call platypus variant caller
-		platypus_caller(platypus_location, genome_reference, target_directory, patient_bam_dict)
-		#I want to check that there is a vcf file for every patient sample, saved in a specified folder
+		platypus_caller(path_to_platypus, build_37_ref, base_path, patient_bam_dict)
 	else:
 		print 'WARNING - target directory contains previously called .vcfs------------------------------------------------------------'
 		print 'no variant calling has been performed'
@@ -259,23 +259,18 @@ def test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_
 	vcf_test_list = []
 	#loop through filenames in target directory base_path
 	for file in os.listdir(base_path):
+		file = str(file)
 		#vcf files named with patient_ID.vcf, strip .vcf from each 
-		patient_ID_file = str(file).strip('.vcf')
+		patient_ID_file = file[:-4]
 		#append list of patients who have had filenames generated
 		vcf_test_list.append(patient_ID_file)
-	print 'Number of patient vcf files created: ' +str(len(vcf_test_list))
+	print 'Number of patient vcf files created: ' + str(len(vcf_test_list))
+	#iterate through patient IDs
 	for key in patient_bam_dict.iterkeys():
 		if key in vcf_test_list:
-			break
+			print str(key) + ' has a vcf'
 		else:
 			print str(key) + ' encountered an error with platypus and no vcf file has been generated'
-'''open each file to check that some calls have been made
-		with open(file, "r") as vcf_file:
-			for line in vcf_file:
-				if sum(1 for line in vcf_file) > 48:
-					break
-				else:
-					print 'This file, ' + vcf_file + ', has no called variants'''
 
 
 
@@ -293,12 +288,3 @@ if __name__ == "__main__":
 	patient_bam_extractor_test(patient_ID_list, bam_locations_list)
 	test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict)
 #	m3234GtoA_filter(vcf_location)
-	
-#for key, value in  patient_bam_dict.iteritems():
-#		print str(key) + ' ' + str(value)
-
-#	test_platypus_output(path_to_platypus, build_37_ref, base_path, patient_bam_dict)
-
-#	for key, value in patient_bam_dict.iteritems():
-#		print str(key) + str(value)
-#	print len(patient_bam_dict.keys())
