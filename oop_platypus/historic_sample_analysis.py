@@ -60,8 +60,10 @@ class Sample:
         #initialise
         def __init__(self, sample_id):
             self.sample_id = str(sample_id)
+	    self.sample_id_numeric = ''
 	    self.data = ""
             self.bam_array = []
+	    self.data1_sub_directories = {}
 
         def sample_sorter(self):
             if self.sample_id.startswith('P'):
@@ -72,25 +74,65 @@ class Sample:
                 self.data = 'not_P_or_v'
             return self.data
 
-	def find_function(self, cmd_array):
-	    found = subprocess.Popen(cmd_array, stdout=subprocess.PIPE)
-	    output, err = found.communicate()
-	    print output, err
-		
+	#def find_function(self, cmd_array):
+	 #   found = subprocess.Popen(cmd_array, stdout=subprocess.PIPE)
+	  #  output, err = found.communicate()
+	   # print output, err
+
+	#only want to do this once and return an array
+	def split_array(self, data=False):
+	    if data == 'data1':
+		sub_directories = []
+
+		#for path in directory_array:
+                #    path_array = item.split('/')
+                #    print path_array[4]
+                #    range_directory_ints = map(int, re.findall(r'\d+', path_array[4]))
+                #    sample_range_directory.remove(x[0])
+                #    if len(x) > 2:
+                #        x.remove(x[-1])
+                #    self.data1_sub_directories[path] = 
+	    #elif data == 'data4':
+	#	arg = '765'
+ 	    return 
+	#only want to do this once and return an array
+	def split_array(self, data=False):
+	    if data == 'data1':
+		sub_directories = []
+
+		#for path in directory_array:
+                #    path_array = item.split('/')
+                #    print path_array[4]
+                #    range_directory_ints = map(int, re.findall(r'\d+', path_array[4]))
+                #    sample_range_directory.remove(x[0])
+                #    if len(x) > 2:
+                #        x.remove(x[-1])
+                #    self.data1_sub_directories[path] = 
+	    #elif data == 'data4':
+	#	arg = '765'
+ 	    return 
+
+#['/mnt/Data1/targeted_sequencing/P5_385-420_blocking_test/assembly', '/mnt/Data1/targeted_sequencing/P5_001-048/assembly', '/mnt/Data1/targeted_sequencing/P5_097-132/assembly', '/mnt/Data1/targeted_sequencing/P5_49-84/assembly', '/mnt/Data1/targeted_sequencing/P5_097-144/assembly', '/mnt/Data1/targeted_sequencing/P5_241-336/assembly', '/mnt/Data1/targeted_sequencing/P5_217-240/assembly', '/mnt/Data1/targeted_sequencing/P5_481-504/assembly', '/mnt/Data1/targeted_sequencing/P5_385-432_run1/assembly', '/mnt/Data1/targeted_sequencing/P5_337-384/assembly', '/mnt/Data1/targeted_sequencing/P5_385-432_run2/assembly', '/mnt/Data1/targeted_sequencing/P5_433-480/assembly', '/mnt/Data1/targeted_sequencing/P5_049-096/assembly', '/mnt/Data1/targeted_sequencing/P5_145-216/assembly']
+
         def locate_bam_file(self):
             if self.data == 'data1':
+		split_id =self.sample_id[-3:]
+		bam_file = glob.glob(self.base_path + "/P5*/assembly/P5*" + split_id + ".*bam")
+                return bam_file
+
+		if not self.data1_sub_directories:
+		    self.split_array('data1')
                 sliced_id = self.sample_id[-3:]
 		print sliced_id
                 sample_regex = "P5_*-*_%s*realigned*bam" %sliced_id
-                arg = glob.glob(self.base_path + "/P5*/assembly")
-		for item in arg:
-		    cmd = "find " + item + " -name " + sample_regex + " -type f"
-		    cmd_array = shlex.split(cmd)
-		    self.find_function(cmd_array)
+		#sub_directories = self.split_array(arg)
+		#print sub_directories
+
+		#for item in arg:
+		#    cmd = "find " + item + " -name " + sample_regex + " -type f"
+		#    cmd_array = shlex.split(cmd)
+		#    self.find_function(cmd_array)
 	
-#cmd = 'sudo rm -rf'
-#basearg = shlex.split(cmd)
-#arg = basearg + glob.glob(path+"/*"
 	
                     #use subprocess.Popen to capture stdout and pipe to found_bam_array
                     #if len(found_bam_array) > 0:
@@ -116,9 +158,8 @@ if __name__ == "__main__":
 	samples = pd.samples()
 	for sample in samples:
 		sample.sample_sorter()
-		print str(sample.sample_id) + ' ' + str(sample.data)
+		#print str(sample.sample_id) + ' ' + str(sample.data)
 		sample.locate_bam_file()
-
 
 
 '''
