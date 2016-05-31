@@ -1,6 +1,5 @@
-
 '''the following code enables historic samples to be analysed with platypus variant caller although additional functionality 
-could be added to the clases'''
+could be added to the classes'''
 
 #-------------------------------------------------------
 '''reads a tab separated input file and produces an array of sample IDs
@@ -49,21 +48,22 @@ class Input_data:
 		return self.non_recognised_ids
 	    else:
    	        print 'all patient IDs are in the recognised format'
-	    	
+
+	#creates an array of samples objects for each sample id    	
         def samples(self):
             for item in self.patient_id_array:
                 self.sample_instances.append(Sample(item))
             return self.sample_instances
 
 class Sample:
-        base_path = "/mnt/Data1/targeted_sequencing"
+        data1_base_path = "/mnt/Data1/targeted_sequencing"
+	data4_base_path = "/mnt/Data4/targeted_sequencing"
         #initialise
         def __init__(self, sample_id):
             self.sample_id = str(sample_id)
 	    self.sample_id_numeric = ''
 	    self.data = ""
-            self.bam_array = []
-	    self.data1_sub_directories = {}
+            self.bam_array = ''
 
         def sample_sorter(self):
             if self.sample_id.startswith('P'):
@@ -74,82 +74,33 @@ class Sample:
                 self.data = 'not_P_or_v'
             return self.data
 
-	#def find_function(self, cmd_array):
-	 #   found = subprocess.Popen(cmd_array, stdout=subprocess.PIPE)
-	  #  output, err = found.communicate()
-	   # print output, err
-
-	#only want to do this once and return an array
-	def split_array(self, data=False):
-	    if data == 'data1':
-		sub_directories = []
-
-		#for path in directory_array:
-                #    path_array = item.split('/')
-                #    print path_array[4]
-                #    range_directory_ints = map(int, re.findall(r'\d+', path_array[4]))
-                #    sample_range_directory.remove(x[0])
-                #    if len(x) > 2:
-                #        x.remove(x[-1])
-                #    self.data1_sub_directories[path] = 
-	    #elif data == 'data4':
-	#	arg = '765'
- 	    return 
-	#only want to do this once and return an array
-	def split_array(self, data=False):
-	    if data == 'data1':
-		sub_directories = []
-
-		#for path in directory_array:
-                #    path_array = item.split('/')
-                #    print path_array[4]
-                #    range_directory_ints = map(int, re.findall(r'\d+', path_array[4]))
-                #    sample_range_directory.remove(x[0])
-                #    if len(x) > 2:
-                #        x.remove(x[-1])
-                #    self.data1_sub_directories[path] = 
-	    #elif data == 'data4':
-	#	arg = '765'
- 	    return 
-
-#['/mnt/Data1/targeted_sequencing/P5_385-420_blocking_test/assembly', '/mnt/Data1/targeted_sequencing/P5_001-048/assembly', '/mnt/Data1/targeted_sequencing/P5_097-132/assembly', '/mnt/Data1/targeted_sequencing/P5_49-84/assembly', '/mnt/Data1/targeted_sequencing/P5_097-144/assembly', '/mnt/Data1/targeted_sequencing/P5_241-336/assembly', '/mnt/Data1/targeted_sequencing/P5_217-240/assembly', '/mnt/Data1/targeted_sequencing/P5_481-504/assembly', '/mnt/Data1/targeted_sequencing/P5_385-432_run1/assembly', '/mnt/Data1/targeted_sequencing/P5_337-384/assembly', '/mnt/Data1/targeted_sequencing/P5_385-432_run2/assembly', '/mnt/Data1/targeted_sequencing/P5_433-480/assembly', '/mnt/Data1/targeted_sequencing/P5_049-096/assembly', '/mnt/Data1/targeted_sequencing/P5_145-216/assembly']
-
         def locate_bam_file(self):
             if self.data == 'data1':
-		split_id =self.sample_id[-3:]
-		bam_file = glob.glob(self.base_path + "/P5*/assembly/P5*" + split_id + ".*bam")
-                return bam_file
+		split_id = self.sample_id[-3:]
+		self.bam_array = glob.glob(self.data1_base_path + "/P5*/assembly/P5*" + split_id + ".*bam")
+		self.write_to_file()
+		#if len(self.bam_array) > 1:
+		#    with open('data1_multiple_bam_files.txt', 'a+') as outfile:
+		#	outfile.write(str(self.bam_array) + "\n")
+		    #print 'sample ' + self.sample_id + ' has multiple bam files on ' + self.data + ' ' + str(self.bam_array)
+		#if len(self.bam_array) == 0:
+		#    print '=====================================================================================' 
+                return self.bam_array
+	    elif self.data == 'data4':
+		print self.sample_id
+		self.bam_array = glob.glob(self.data4_base_path + "/*-*-*_*/assembly/*" + self.sample_id + "*realigned*.*bam")
+		print self.bam_array
+		return self.bam_array
 
-		if not self.data1_sub_directories:
-		    self.split_array('data1')
-                sliced_id = self.sample_id[-3:]
-		print sliced_id
-                sample_regex = "P5_*-*_%s*realigned*bam" %sliced_id
-		#sub_directories = self.split_array(arg)
-		#print sub_directories
-
-		#for item in arg:
-		#    cmd = "find " + item + " -name " + sample_regex + " -type f"
-		#    cmd_array = shlex.split(cmd)
-		#    self.find_function(cmd_array)
-	
-	
-                    #use subprocess.Popen to capture stdout and pipe to found_bam_array
-                    #if len(found_bam_array) > 0:
-                    #    print 'multiple bam files identified for patient_id' + self.sample_ID
-                    #    for idx, item in enumerate(found_bam_array):
-                    #            print str(idx) + " " + str(item)
-                    #    user_input_statemet = "Enter the index of the bam file you wish to analyse %s : " %self.sample_id
-                    #    user_input = raw_input(user_input_statement)
-                    #    self.bam_file_array.append(found_bam_array[int(raw_input)])
-                    #else:
-                    #    print 'appending %s to bam_file_array for sample %s' %(str(found_bam_array[0], self.sample_id)
-                    #    self.bam_file_array.append(found_bam_array[0])
-                    #return self.bam_file_array
-                #elif self.bam_file_array[1] == 'data4':
-                 #   found_bam_array = []
-
-
+	def write_to_file(self):
+	    if len(self.bam_array) > 1:
+		filename = self.data + 'multiple_bam_files.txt'
+		with open(filename, 'a+') as outfile:
+		   outfile.write(str(self.bam_array) + '\n')
+	    elif len(self.bam_array) == 0:
+		filename = self.data + 'no_bam_files.txt'
+		with open(filename, 'a+') as outfile:
+		    outfile.write(str(self.sample_id) + "\n")
 
 if __name__ == "__main__":
 	pd = Input_data('/mnt/Data4/working_directory/stuart/python-2-7-10/scripts/platypus/obsolete/mitochondrial_sensitivity_MODY.csv')
@@ -161,6 +112,8 @@ if __name__ == "__main__":
 		#print str(sample.sample_id) + ' ' + str(sample.data)
 		sample.locate_bam_file()
 
+	print 'Where there are multiple samples, the first one is selected for analysis'
+        print 'See multiple_bam_files.txt to view the files that will have been analysed'
 
 '''
 wrapper_script
